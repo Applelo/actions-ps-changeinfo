@@ -99,7 +99,7 @@ module.exports = Octokit;
 "use strict";
 
 const os = __webpack_require__(87);
-const macosRelease = __webpack_require__(118);
+const macosRelease = __webpack_require__(964);
 const winRelease = __webpack_require__(49);
 
 const osName = (platform, release) => {
@@ -2123,41 +2123,43 @@ module.exports = require("os");
 /***/ }),
 
 /***/ 118:
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-const os = __webpack_require__(87);
-
-const nameMap = new Map([
-	[19, 'Catalina'],
-	[18, 'Mojave'],
-	[17, 'High Sierra'],
-	[16, 'Sierra'],
-	[15, 'El Capitan'],
-	[14, 'Yosemite'],
-	[13, 'Mavericks'],
-	[12, 'Mountain Lion'],
-	[11, 'Lion'],
-	[10, 'Snow Leopard'],
-	[9, 'Leopard'],
-	[8, 'Tiger'],
-	[7, 'Panther'],
-	[6, 'Jaguar'],
-	[5, 'Puma']
-]);
-
-const macosRelease = release => {
-	release = Number((release || os.release()).split('.')[0]);
-	return {
-		name: nameMap.get(release),
-		version: '10.' + (release - 4)
-	};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-
-module.exports = macosRelease;
-// TODO: remove this in the next major version
-module.exports.default = macosRelease;
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const github = __importStar(__webpack_require__(469));
+function pullRequest(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            const octokit = new github.GitHub(token);
+            const context = github.context;
+            yield octokit.pulls
+                .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: `${context.repo.owner}:vita-changeinfo`, base: 'master' }))
+                .catch(error => {
+                throw error;
+            });
+            resolve(true);
+        }));
+    });
+}
+exports.pullRequest = pullRequest;
 
 
 /***/ }),
@@ -3688,7 +3690,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const create_1 = __webpack_require__(646);
 const parse_1 = __webpack_require__(179);
-const github_1 = __webpack_require__(824);
+const pullRequest_1 = __webpack_require__(118);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -3702,7 +3704,7 @@ function run() {
             core.info('Markedown parsed');
             yield create_1.create(markedown, output);
             core.info('Changeinfo created');
-            yield github_1.gitHub(token);
+            yield pullRequest_1.pullRequest(token);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -16168,40 +16170,6 @@ function isexe (path, options, cb) {
 function sync (path, options) {
   return checkStat(fs.statSync(path), path, options)
 }
-
-
-/***/ }),
-
-/***/ 824:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const github_1 = __importDefault(__webpack_require__(469));
-function gitHub(token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            const octokit = new github_1.default.GitHub(token);
-            const context = github_1.default.context;
-            yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: `${context.repo.owner}:vita-changeinfo`, base: 'master' }));
-            resolve(true);
-        }));
-    });
-}
-exports.gitHub = gitHub;
 
 
 /***/ }),
@@ -32870,6 +32838,46 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
   };
 
 }).call(this);
+
+
+/***/ }),
+
+/***/ 964:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+"use strict";
+
+const os = __webpack_require__(87);
+
+const nameMap = new Map([
+	[19, 'Catalina'],
+	[18, 'Mojave'],
+	[17, 'High Sierra'],
+	[16, 'Sierra'],
+	[15, 'El Capitan'],
+	[14, 'Yosemite'],
+	[13, 'Mavericks'],
+	[12, 'Mountain Lion'],
+	[11, 'Lion'],
+	[10, 'Snow Leopard'],
+	[9, 'Leopard'],
+	[8, 'Tiger'],
+	[7, 'Panther'],
+	[6, 'Jaguar'],
+	[5, 'Puma']
+]);
+
+const macosRelease = release => {
+	release = Number((release || os.release()).split('.')[0]);
+	return {
+		name: nameMap.get(release),
+		version: '10.' + (release - 4)
+	};
+};
+
+module.exports = macosRelease;
+// TODO: remove this in the next major version
+module.exports.default = macosRelease;
 
 
 /***/ }),

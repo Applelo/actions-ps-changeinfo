@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import {create} from './create';
 import {parse} from './parse';
-import {gitHub} from './github';
+import {pullRequest} from './pullRequest';
 
 async function run(): Promise<void> {
   try {
@@ -16,7 +16,7 @@ async function run(): Promise<void> {
     core.info('Markedown parsed');
     await create(markedown, output);
     core.info('Changeinfo created');
-    await gitHub(token);
+    await pullRequest(token);
   } catch (error) {
     core.setFailed(error.message);
   }

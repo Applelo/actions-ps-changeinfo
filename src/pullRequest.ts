@@ -1,8 +1,9 @@
-import {GitHub, context} from '@actions/github';
+import * as github from '@actions/github';
 
-export async function gitHub(token: string): Promise<boolean> {
+export async function pullRequest(token: string): Promise<boolean> {
   return new Promise(async resolve => {
-    const octokit = new GitHub(token);
+    const octokit = new github.GitHub(token);
+    const context = github.context;
 
     await octokit.pulls
       .create({

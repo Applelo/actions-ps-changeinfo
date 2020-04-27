@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
+  "name": "actions-vita-changeinfo",
+  "version": "1.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "Transform CHANGELOG.md into changeinfo.xml",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -22,7 +22,7 @@
     "node",
     "setup"
   ],
-  "author": "YourNameOrOrganization",
+  "author": "Applelo",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.0",
