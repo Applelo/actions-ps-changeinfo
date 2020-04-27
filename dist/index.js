@@ -2150,8 +2150,12 @@ function pullRequest(token) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
             const context = github.context;
+            // create branch
+            yield octokit.git.createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: 'refs/heads/vita-changeinfo' }));
+            // commit file
+            // Pull request
             yield octokit.pulls
-                .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: `${context.repo.owner}:vita-changeinfo`, base: 'master' }))
+                .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: 'vita-changeinfo', base: 'master' }))
                 .catch(error => {
                 throw error;
             });
@@ -3700,11 +3704,15 @@ function run() {
             const input = core.getInput('input'); //default 'CHANGELOG.md'
             const output = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
             core.info(`Options: {input: ${input}, output: ${output}}`);
-            const markedown = yield parse_1.parse(input);
+            const markedown = yield parse_1.parse(input).catch(error => core.error(error));
+            if (!markedown) {
+                core.info('Markdown failed');
+                return;
+            }
             core.info('Markedown parsed');
-            yield create_1.create(markedown, output);
+            yield create_1.create(markedown, output).catch(error => core.error(error));
             core.info('Changeinfo created');
-            yield pullRequest_1.pullRequest(token);
+            yield pullRequest_1.pullRequest(token).catch(error => core.error(error));
         }
         catch (error) {
             core.setFailed(error.message);

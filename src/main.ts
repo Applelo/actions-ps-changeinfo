@@ -12,11 +12,19 @@ async function run(): Promise<void> {
     const output: string = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
 
     core.info(`Options: {input: ${input}, output: ${output}}`);
-    const markedown: marked.TokensList = await parse(input);
+    const markedown: marked.TokensList | void = await parse(
+      input,
+    ).catch(error => core.error(error));
+
+    if (!markedown) {
+      core.info('Markdown failed');
+      return;
+    }
+
     core.info('Markedown parsed');
-    await create(markedown, output);
+    await create(markedown, output).catch(error => core.error(error));
     core.info('Changeinfo created');
-    await pullRequest(token);
+    await pullRequest(token).catch(error => core.error(error));
   } catch (error) {
     core.setFailed(error.message);
   }
