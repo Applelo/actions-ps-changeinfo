@@ -1,5 +1,12 @@
-export async function parse(): Promise<string> {
+import marked from 'marked';
+import fs from 'fs';
+
+export async function parse(input: string): Promise<marked.TokensList> {
   return new Promise(resolve => {
-    resolve('true');
+    fs.readFile(input, (err, data) => {
+      if (err) throw err;
+      const lexer: marked.TokensList = marked.lexer(data.toString());
+      resolve(lexer);
+    });
   });
 }
