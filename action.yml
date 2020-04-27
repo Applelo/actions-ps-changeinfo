@@ -1,10 +1,32 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: "Vita Changeinfo"
+description: "Transform CHANGELOG.md into changeinfo.xml "
+author: "Applelo"
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  # Main
+  input:
+    description: "The path of the changelog markdown file"
+    default: "CHANGELOG.md"
+    required: false
+  output:
+    description: "The path of the changeinfo xml file"
+    default: "sce_sys/changeinfo.xml"
+    required: false
+  token:
+    description: "GitHub token"
+    required: true
+  # Git
+  # commit_user_name:
+  #   description: Name used for the commit user
+  #   required: false
+  #   default: GitHub Actions
+  # commit_user_email:
+  #   description: Email address used for the commit user
+  #   required: false
+  #   default: actions@github.com
+  # commit_author:
+  #   description: Value used for the commit author. Defaults to the username of whoever triggered this workflow run.
+  #   required: false
+  #   default: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"

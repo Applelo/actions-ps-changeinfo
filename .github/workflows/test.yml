@@ -19,5 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: ./
-      with: 
-        milliseconds: 1000
+      with:
+        input: '__tests__/CHANGELOG.md'
+        output: '__tests__/changeinfo.xml'
+        token: ${{ secrets.GITHUB_TOKEN }}
