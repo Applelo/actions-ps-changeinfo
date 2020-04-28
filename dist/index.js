@@ -2145,17 +2145,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const github = __importStar(__webpack_require__(469));
-function pullRequest(token) {
+function pullRequest(token, xml, output) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
             const context = github.context;
+            const branch = 'vita-changeinfo';
             // create branch
-            yield octokit.git.createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: 'refs/heads/vita-changeinfo' }));
-            // commit file
+            yield octokit.git
+                .createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: `refs/heads/${branch}` }))
+                .catch(() => { });
+            //get file
+            const contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output }));
+            let createOrUpdateFileSHA = '';
+            if (!Array.isArray(contents.data)) {
+                createOrUpdateFileSHA = contents.data.sha;
+            }
+            // create / update file
+            yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
+                    name: 'GitHub Actions',
+                    email: 'actions@github.com',
+                }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }));
             // Pull request
             yield octokit.pulls
-                .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: 'vita-changeinfo', base: 'master' }))
+                .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: branch, base: 'master' }))
                 .catch(error => {
                 throw error;
             });
@@ -3706,13 +3719,17 @@ function run() {
             core.info(`Options: {input: ${input}, output: ${output}}`);
             const markedown = yield parse_1.parse(input).catch(error => core.error(error));
             if (!markedown) {
-                core.info('Markdown failed');
-                return;
+                core.info('Markdown parsed failed');
+                throw Error('Markdown parsed failed');
             }
             core.info('Markedown parsed');
-            yield create_1.create(markedown, output).catch(error => core.error(error));
+            const xml = yield create_1.create(markedown).catch(error => core.error(error));
+            if (!xml) {
+                core.info('Changeingo creation failed');
+                throw Error('changeingo creation failed');
+            }
             core.info('Changeinfo created');
-            yield pullRequest_1.pullRequest(token).catch(error => core.error(error));
+            yield pullRequest_1.pullRequest(token, xml, output).catch(error => core.error(error));
         }
         catch (error) {
             core.setFailed(error.message);
@@ -11937,8 +11954,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const xmlbuilder_1 = __importDefault(__webpack_require__(312));
-const fs_1 = __importDefault(__webpack_require__(747));
-function create(markdown, output) {
+function create(markdown) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
             const changeinfo = xmlbuilder_1.default.create('changeinfo');
@@ -11968,11 +11984,7 @@ function create(markdown, output) {
                 }
             }
             const xml = changeinfo.end({ pretty: true });
-            fs_1.default.writeFile(output, xml, err => {
-                if (err)
-                    throw err;
-                resolve(true);
-            });
+            resolve(xml);
         });
     });
 }

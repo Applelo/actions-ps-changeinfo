@@ -18,10 +18,7 @@ test('changelog', async () => {
 
 test('changeinfo', async () => {
   const markdown = await parse('__tests__/CHANGELOG.md');
-  const created = await create(markdown, '__tests__/changeinfo.xml');
-  expect(created).toBe(true);
-
-  const changeinfo = await readAFile('__tests__/changeinfo.xml');
+  const created = await create(markdown);
   const expected = await readAFile('__tests__/expected.xml');
-  expect(expected).toMatch(expected);
+  expect(expected).toMatch(created);
 });

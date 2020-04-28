@@ -11,11 +11,13 @@ export async function pullRequest(
     const branch = 'vita-changeinfo';
 
     // create branch
-    await octokit.git.createRef({
-      ...context.repo,
-      sha: context.sha,
-      ref: `refs/heads/${branch}`,
-    });
+    await octokit.git
+      .createRef({
+        ...context.repo,
+        sha: context.sha,
+        ref: `refs/heads/${branch}`,
+      })
+      .catch(() => {});
 
     //get file
     const contents = await octokit.repos.getContents({
