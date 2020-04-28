@@ -19,8 +19,8 @@ export async function pullRequest(
         ref: `refs/heads/${branch}`,
       });
     } catch (error) {
-      core.error('unable to create branch');
-      core.error(error);
+      core.info('unable to create branch');
+      core.info(error);
     }
 
     //get file
@@ -35,14 +35,9 @@ export async function pullRequest(
       core.error(error);
     }
 
-    if (!contents) {
-      core.error('no contents');
-      return;
-    }
-
     let createOrUpdateFileSHA;
 
-    if (!Array.isArray(contents.data)) {
+    if (contents && !Array.isArray(contents.data)) {
       createOrUpdateFileSHA = {sha: contents.data.sha};
     }
     // create / update file
