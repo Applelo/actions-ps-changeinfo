@@ -2145,6 +2145,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const github = __importStar(__webpack_require__(469));
+const core = __importStar(__webpack_require__(470));
 function pullRequest(token, xml, output) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
@@ -2152,26 +2153,49 @@ function pullRequest(token, xml, output) {
             const context = github.context;
             const branch = 'vita-changeinfo';
             // create branch
-            yield octokit.git
-                .createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: `refs/heads/${branch}` }))
-                .catch(() => { });
+            try {
+                yield octokit.git.createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: `refs/heads/${branch}` }));
+            }
+            catch (error) {
+                core.error('unable to create branch');
+                core.error(error);
+            }
             //get file
-            const contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output }));
+            let contents = null;
+            try {
+                contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output }));
+            }
+            catch (error) {
+                core.error('unable to get file');
+                core.error(error);
+            }
+            if (!contents) {
+                core.error('no contents');
+                return;
+            }
             let createOrUpdateFileSHA;
             if (!Array.isArray(contents.data)) {
                 createOrUpdateFileSHA = { sha: contents.data.sha };
             }
             // create / update file
-            yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
-                    name: 'GitHub Actions',
-                    email: 'actions@github.com',
-                }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }), createOrUpdateFileSHA));
+            try {
+                yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
+                        name: 'GitHub Actions',
+                        email: 'actions@github.com',
+                    }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }), createOrUpdateFileSHA));
+            }
+            catch (error) {
+                core.error('unable to create / update file');
+                core.error(error);
+            }
             // Pull request
-            yield octokit.pulls
-                .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: branch, base: 'master' }))
-                .catch(error => {
-                throw error;
-            });
+            try {
+                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: branch, base: 'master' }));
+            }
+            catch (error) {
+                core.error('unable to pull request');
+                core.error(error);
+            }
             resolve(true);
         }));
     });
