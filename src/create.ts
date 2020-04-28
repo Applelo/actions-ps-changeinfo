@@ -1,10 +1,6 @@
 import builder from 'xmlbuilder';
-import fs from 'fs';
 
-export async function create(
-  markdown: marked.TokensList,
-  output: string,
-): Promise<true> {
+export async function create(markdown: marked.TokensList): Promise<string> {
   return new Promise(resolve => {
     const changeinfo = builder.create('changeinfo');
 
@@ -39,9 +35,6 @@ export async function create(
 
     const xml = changeinfo.end({pretty: true});
 
-    fs.writeFile(output, xml, err => {
-      if (err) throw err;
-      resolve(true);
-    });
+    resolve(xml);
   });
 }

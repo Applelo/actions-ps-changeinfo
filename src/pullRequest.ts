@@ -1,25 +1,53 @@
 import * as github from '@actions/github';
 
-export async function pullRequest(token: string): Promise<boolean> {
+export async function pullRequest(
+  token: string,
+  xml: string,
+  output: string,
+): Promise<boolean> {
   return new Promise(async resolve => {
     const octokit = new github.GitHub(token);
     const context = github.context;
+    const branch = 'vita-changeinfo';
 
     // create branch
     await octokit.git.createRef({
       ...context.repo,
       sha: context.sha,
-      ref: 'refs/heads/vita-changeinfo',
+      ref: `refs/heads/${branch}`,
     });
 
-    // commit file
+    //get file
+    const contents = await octokit.repos.getContents({
+      ...context.repo,
+      path: output,
+    });
+
+    let createOrUpdateFileSHA = '';
+
+    if (!Array.isArray(contents.data)) {
+      createOrUpdateFileSHA = contents.data.sha;
+    }
+    // create / update file
+    await octokit.repos.createOrUpdateFile({
+      ...context.repo,
+      branch,
+      content: Buffer.from(xml).toString('base64'),
+      committer: {
+        name: 'GitHub Actions',
+        email: 'actions@github.com',
+      },
+      path: output,
+      message: 'Add/Update changeinfo.xml',
+      sha: createOrUpdateFileSHA,
+    });
 
     // Pull request
     await octokit.pulls
       .create({
         ...context.repo,
         title: '[Vita Changeinfo] New changeinfo update',
-        head: 'vita-changeinfo',
+        head: branch,
         base: 'master',
       })
       .catch(error => {

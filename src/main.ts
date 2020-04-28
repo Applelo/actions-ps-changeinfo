@@ -17,14 +17,20 @@ async function run(): Promise<void> {
     ).catch(error => core.error(error));
 
     if (!markedown) {
-      core.info('Markdown failed');
-      return;
+      core.info('Markdown parsed failed');
+      throw Error('Markdown parsed failed');
     }
 
     core.info('Markedown parsed');
-    await create(markedown, output).catch(error => core.error(error));
+    const xml = await create(markedown).catch(error => core.error(error));
+
+    if (!xml) {
+      core.info('Changeingo creation failed');
+      throw Error('changeingo creation failed');
+    }
     core.info('Changeinfo created');
-    await pullRequest(token).catch(error => core.error(error));
+
+    await pullRequest(token, xml, output).catch(error => core.error(error));
   } catch (error) {
     core.setFailed(error.message);
   }
