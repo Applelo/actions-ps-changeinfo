@@ -11,7 +11,6 @@ async function run(): Promise<void> {
     const input: string = core.getInput('input'); //default 'CHANGELOG.md'
     const output: string = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
 
-    core.info(`Options: {input: ${input}, output: ${output}}`);
     const markedown: marked.TokensList | void = await parse(
       input,
     ).catch(error => core.error(error));

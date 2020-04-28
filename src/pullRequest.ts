@@ -25,24 +25,29 @@ export async function pullRequest(
       path: output,
     });
 
-    let createOrUpdateFileSHA = '';
+    let createOrUpdateFileSHA;
 
     if (!Array.isArray(contents.data)) {
-      createOrUpdateFileSHA = contents.data.sha;
+      createOrUpdateFileSHA = {sha: contents.data.sha};
     }
     // create / update file
-    await octokit.repos.createOrUpdateFile({
-      ...context.repo,
-      branch,
-      content: Buffer.from(xml).toString('base64'),
-      committer: {
-        name: 'GitHub Actions',
-        email: 'actions@github.com',
-      },
-      path: output,
-      message: 'Add/Update changeinfo.xml',
-      sha: createOrUpdateFileSHA,
-    });
+    await octokit.repos.createOrUpdateFile(
+      Object.assign(
+        {
+          ...context.repo,
+          branch,
+          content: Buffer.from(xml).toString('base64'),
+          committer: {
+            name: 'GitHub Actions',
+            email: 'actions@github.com',
+          },
+          path: output,
+          message: 'Add/Update changeinfo.xml',
+          sha: createOrUpdateFileSHA,
+        },
+        createOrUpdateFileSHA,
+      ),
+    );
 
     // Pull request
     await octokit.pulls
