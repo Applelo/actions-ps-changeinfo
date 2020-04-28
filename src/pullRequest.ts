@@ -1,4 +1,5 @@
 import * as github from '@actions/github';
+import * as core from '@actions/core';
 
 export async function pullRequest(
   token: string,
@@ -11,19 +12,33 @@ export async function pullRequest(
     const branch = 'vita-changeinfo';
 
     // create branch
-    await octokit.git
-      .createRef({
+    try {
+      await octokit.git.createRef({
         ...context.repo,
         sha: context.sha,
         ref: `refs/heads/${branch}`,
-      })
-      .catch(() => {});
+      });
+    } catch (error) {
+      core.error('unable to create branch');
+      core.error(error);
+    }
 
     //get file
-    const contents = await octokit.repos.getContents({
-      ...context.repo,
-      path: output,
-    });
+    let contents = null;
+    try {
+      contents = await octokit.repos.getContents({
+        ...context.repo,
+        path: output,
+      });
+    } catch (error) {
+      core.error('unable to get file');
+      core.error(error);
+    }
+
+    if (!contents) {
+      core.error('no contents');
+      return;
+    }
 
     let createOrUpdateFileSHA;
 
@@ -31,35 +46,41 @@ export async function pullRequest(
       createOrUpdateFileSHA = {sha: contents.data.sha};
     }
     // create / update file
-    await octokit.repos.createOrUpdateFile(
-      Object.assign(
-        {
-          ...context.repo,
-          branch,
-          content: Buffer.from(xml).toString('base64'),
-          committer: {
-            name: 'GitHub Actions',
-            email: 'actions@github.com',
+    try {
+      await octokit.repos.createOrUpdateFile(
+        Object.assign(
+          {
+            ...context.repo,
+            branch,
+            content: Buffer.from(xml).toString('base64'),
+            committer: {
+              name: 'GitHub Actions',
+              email: 'actions@github.com',
+            },
+            path: output,
+            message: 'Add/Update changeinfo.xml',
+            sha: createOrUpdateFileSHA,
           },
-          path: output,
-          message: 'Add/Update changeinfo.xml',
-          sha: createOrUpdateFileSHA,
-        },
-        createOrUpdateFileSHA,
-      ),
-    );
+          createOrUpdateFileSHA,
+        ),
+      );
+    } catch (error) {
+      core.error('unable to create / update file');
+      core.error(error);
+    }
 
     // Pull request
-    await octokit.pulls
-      .create({
+    try {
+      await octokit.pulls.create({
         ...context.repo,
         title: '[Vita Changeinfo] New changeinfo update',
         head: branch,
         base: 'master',
-      })
-      .catch(error => {
-        throw error;
       });
+    } catch (error) {
+      core.error('unable to pull request');
+      core.error(error);
+    }
 
     resolve(true);
   });
