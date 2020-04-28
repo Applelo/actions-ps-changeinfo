@@ -2157,8 +2157,8 @@ function pullRequest(token, xml, output) {
                 yield octokit.git.createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: `refs/heads/${branch}` }));
             }
             catch (error) {
-                core.error('unable to create branch');
-                core.error(error);
+                core.info('unable to create branch');
+                core.info(error);
             }
             //get file
             let contents = null;
@@ -2169,12 +2169,8 @@ function pullRequest(token, xml, output) {
                 core.error('unable to get file');
                 core.error(error);
             }
-            if (!contents) {
-                core.error('no contents');
-                return;
-            }
             let createOrUpdateFileSHA;
-            if (!Array.isArray(contents.data)) {
+            if (contents && !Array.isArray(contents.data)) {
                 createOrUpdateFileSHA = { sha: contents.data.sha };
             }
             // create / update file
