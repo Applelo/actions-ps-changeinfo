@@ -2157,15 +2157,15 @@ function pullRequest(token, xml, output) {
                 .catch(() => { });
             //get file
             const contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output }));
-            let createOrUpdateFileSHA = '';
+            let createOrUpdateFileSHA;
             if (!Array.isArray(contents.data)) {
-                createOrUpdateFileSHA = contents.data.sha;
+                createOrUpdateFileSHA = { sha: contents.data.sha };
             }
             // create / update file
-            yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
+            yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
                     name: 'GitHub Actions',
                     email: 'actions@github.com',
-                }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }));
+                }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }), createOrUpdateFileSHA));
             // Pull request
             yield octokit.pulls
                 .create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: branch, base: 'master' }))
@@ -3716,7 +3716,6 @@ function run() {
                 core.error('No GitHub Token');
             const input = core.getInput('input'); //default 'CHANGELOG.md'
             const output = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
-            core.info(`Options: {input: ${input}, output: ${output}}`);
             const markedown = yield parse_1.parse(input).catch(error => core.error(error));
             if (!markedown) {
                 core.info('Markdown parsed failed');
