@@ -98,3 +98,5 @@ Thumbs.db
 __tests__/runner/*
 lib/**/*
 __tests__/changeinfo.xml
+src/test.ts
+src/*.js

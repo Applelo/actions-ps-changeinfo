@@ -1,5 +1,6 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
+import {Context} from '@actions/github/lib/context';
 
 export async function pullRequest(
   token: string,
@@ -10,6 +11,10 @@ export async function pullRequest(
     const octokit = new github.GitHub(token);
     const context = github.context;
     const branch = 'vita-changeinfo';
+    // const context = {
+    //   repo: {repo: 'actions-vita-changeinfo', owner: 'Applelo'},
+    //   sha: '',
+    // };
 
     // create branch
     try {
@@ -24,17 +29,13 @@ export async function pullRequest(
     }
 
     //get file
-    let sha = null;
+    let contents = null;
     try {
-      // Not working, I don't know why
-      // contents = await octokit.repos.getContents({
-      //   ...context.repo,
-      //   path: output,
-      //   ref: branch,
-      // });
-      sha = octokit.repos.get.endpoint({
-        url: `https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/contents/${output}?ref=${branch}`,
-      }).body.sha;
+      contents = await octokit.repos.getContents({
+        ...context.repo,
+        path: output,
+        ref: branch,
+      });
     } catch (error) {
       core.info('unable to get file');
       core.info(error);
@@ -42,9 +43,13 @@ export async function pullRequest(
 
     let createOrUpdateFileSHA;
 
-    if (sha) {
-      createOrUpdateFileSHA = {sha};
+    if (contents && !Array.isArray(contents.data)) {
+      createOrUpdateFileSHA = {sha: contents.data.sha};
+      console.log('sha', contents.data.sha);
     }
+
+    // return;
+
     // create / update file
     try {
       await octokit.repos.createOrUpdateFile(
