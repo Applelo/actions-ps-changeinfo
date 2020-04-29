@@ -10,14 +10,13 @@ export async function pullRequest(
     const octokit = new github.GitHub(token);
     const context = github.context;
     const branch = 'vita-changeinfo';
-    const ref = `refs/heads/${branch}`;
 
     // create branch
     try {
       await octokit.git.createRef({
         ...context.repo,
         sha: context.sha,
-        ref,
+        ref: `refs/heads/${branch}`,
       });
     } catch (error) {
       core.info('unable to create branch');
@@ -25,13 +24,18 @@ export async function pullRequest(
     }
 
     //get file
-    let contents = null;
+    let sha = null;
     try {
-      contents = await octokit.repos.getContents({
+      // contents = await octokit.repos.getContents({
+      //   ...context.repo,
+      //   path: output,
+      //   ref: branch,
+      // });
+      sha = octokit.repos.get.endpoint({
         ...context.repo,
         path: output,
-        ref,
-      });
+        ref: branch,
+      }).body.sha;
     } catch (error) {
       core.info('unable to get file');
       core.info(error);
@@ -39,8 +43,8 @@ export async function pullRequest(
 
     let createOrUpdateFileSHA;
 
-    if (contents && !Array.isArray(contents.data)) {
-      createOrUpdateFileSHA = {sha: contents.data.sha};
+    if (sha) {
+      createOrUpdateFileSHA = {sha};
     }
     // create / update file
     try {
