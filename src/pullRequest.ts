@@ -64,16 +64,31 @@ export async function pullRequest(
       core.error(error);
     }
 
+    let pullRequests;
+
+    try {
+      pullRequests = await octokit.pulls.list({
+        ...context.repo,
+        head: branch,
+        state: 'open',
+      });
+    } catch (error) {
+      core.error('unable to get pull request');
+      core.error(error);
+    }
+
+    if (pullRequests) return;
+
     // Pull request
     try {
       await octokit.pulls.create({
         ...context.repo,
-        title: '[Vita Changeinfo] New changeinfo update',
+        title: '[Vita Changeinfo] Changeinfo update',
         head: branch,
         base: 'master',
       });
     } catch (error) {
-      core.error('unable to pull request');
+      core.error('unable to create pull request');
       core.error(error);
     }
 

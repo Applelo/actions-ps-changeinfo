@@ -1,11 +1,12 @@
 import builder from 'xmlbuilder';
+// import fs from 'fs';
 
 export async function create(markdown: marked.TokensList): Promise<string> {
   return new Promise(resolve => {
-    const changeinfo = builder.create('changeinfo');
+    const changelog: Map<string, string[]> = new Map();
+    let currentVersion = '';
 
     for (const item of markdown) {
-      const changes = changeinfo.ele('changes');
       if (item.type === 'heading' && item.depth === 1) {
         const versionParts = item.text.split('.');
         const versionFirst =
@@ -17,7 +18,8 @@ export async function create(markdown: marked.TokensList): Promise<string> {
             ? `${versionParts[1]}0`
             : `${versionParts[1]}`;
         const version = `${versionFirst}.${versionSecond}`;
-        changes.att('app_ver', version);
+        currentVersion = version;
+
         //@ts-ignore
       } else if (item.type === 'list') {
         //@ts-ignore
@@ -29,11 +31,24 @@ export async function create(markdown: marked.TokensList): Promise<string> {
         }
         list.push('');
 
-        changes.dat(list.join('\n'));
+        changelog.set(currentVersion, list);
       }
     }
 
+    const changelogKeys = Array.from(changelog.keys()).reverse();
+
+    const changeinfo = builder.create('changeinfo');
+    for (const version of changelogKeys) {
+      const list = changelog.get(version);
+      if (list) {
+        const changes = changeinfo.ele('changes');
+
+        changes.att('app_ver', version);
+        changes.dat(list.join('\n'));
+      }
+    }
     const xml = changeinfo.end({pretty: true});
+    // fs.writeFile('__tests__/changeinfo.xml', xml, () => {});
 
     resolve(xml);
   });

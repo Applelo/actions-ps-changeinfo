@@ -1,20 +1,19 @@
 <?xml version="1.0"?>
 <changeinfo>
-  <changes app_ver="10.01"/>
-  <changes><![CDATA[
-- Huge bump version
+  <changes app_ver="01.00"><![CDATA[
+- Initial Release
 ]]></changes>
-  <changes app_ver="01.11"/>
-  <changes><![CDATA[
-- Fix everything
-]]></changes>
-  <changes app_ver="01.10"/>
-  <changes><![CDATA[
+  <changes app_ver="01.10"><![CDATA[
 - Add some stuff
 - Fix some stuff
 ]]></changes>
-  <changes app_ver="01.00"/>
-  <changes><![CDATA[
-- Initial Release
+  <changes app_ver="01.11"><![CDATA[
+- Fix everything
+]]></changes>
+  <changes app_ver="01.12"><![CDATA[
+- Update app test
+]]></changes>
+  <changes app_ver="10.01"><![CDATA[
+- Huge bump version
 ]]></changes>
 </changeinfo>

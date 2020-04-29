@@ -2184,12 +2184,22 @@ function pullRequest(token, xml, output) {
                 core.error('unable to create / update file');
                 core.error(error);
             }
-            // Pull request
+            let pullRequests;
             try {
-                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] New changeinfo update', head: branch, base: 'master' }));
+                pullRequests = yield octokit.pulls.list(Object.assign(Object.assign({}, context.repo), { head: branch, state: 'open' }));
             }
             catch (error) {
-                core.error('unable to pull request');
+                core.error('unable to get pull request');
+                core.error(error);
+            }
+            if (pullRequests)
+                return;
+            // Pull request
+            try {
+                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] Changeinfo update', head: branch, base: 'master' }));
+            }
+            catch (error) {
+                core.error('unable to create pull request');
                 core.error(error);
             }
             resolve(true);
@@ -11973,12 +11983,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const xmlbuilder_1 = __importDefault(__webpack_require__(312));
+// import fs from 'fs';
 function create(markdown) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
-            const changeinfo = xmlbuilder_1.default.create('changeinfo');
+            const changelog = new Map();
+            let currentVersion = '';
             for (const item of markdown) {
-                const changes = changeinfo.ele('changes');
                 if (item.type === 'heading' && item.depth === 1) {
                     const versionParts = item.text.split('.');
                     const versionFirst = versionParts[0].length === 1
@@ -11988,7 +11999,7 @@ function create(markdown) {
                         ? `${versionParts[1]}0`
                         : `${versionParts[1]}`;
                     const version = `${versionFirst}.${versionSecond}`;
-                    changes.att('app_ver', version);
+                    currentVersion = version;
                     //@ts-ignore
                 }
                 else if (item.type === 'list') {
@@ -11999,10 +12010,21 @@ function create(markdown) {
                         list.push(listItem.raw.trim());
                     }
                     list.push('');
+                    changelog.set(currentVersion, list);
+                }
+            }
+            const changelogKeys = Array.from(changelog.keys()).reverse();
+            const changeinfo = xmlbuilder_1.default.create('changeinfo');
+            for (const version of changelogKeys) {
+                const list = changelog.get(version);
+                if (list) {
+                    const changes = changeinfo.ele('changes');
+                    changes.att('app_ver', version);
                     changes.dat(list.join('\n'));
                 }
             }
             const xml = changeinfo.end({ pretty: true });
+            // fs.writeFile('__tests__/changeinfo.xml', xml, () => {});
             resolve(xml);
         });
     });

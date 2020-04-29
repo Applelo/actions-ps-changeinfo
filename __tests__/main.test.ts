@@ -13,12 +13,12 @@ function readAFile(path: string): Promise<string> {
 
 test('changelog', async () => {
   const markdown = await parse('__tests__/CHANGELOG.md');
-  expect(markdown.length).toBe(8);
+  expect(markdown.length).toBe(10);
 });
 
 test('changeinfo', async () => {
   const markdown = await parse('__tests__/CHANGELOG.md');
   const created = await create(markdown);
   const expected = await readAFile('__tests__/expected.xml');
-  expect(expected).toMatch(created);
+  expect(created).toMatch(expected);
 });
