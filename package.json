@@ -1,5 +1,5 @@
 {
-  "name": "actions-vita-changeinfo",
+  "name": "actions-ps-changeinfo",
   "version": "1.0.0",
   "private": true,
   "description": "Transform CHANGELOG.md into changeinfo.xml",

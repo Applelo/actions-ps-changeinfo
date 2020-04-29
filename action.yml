@@ -1,4 +1,4 @@
-name: "Vita Changeinfo"
+name: "PlayStation Changeinfo"
 description: "Transform CHANGELOG.md into changeinfo.xml "
 author: "Applelo"
 inputs:
@@ -14,19 +14,6 @@ inputs:
   token:
     description: "GitHub token"
     required: true
-  # Git
-  # commit_user_name:
-  #   description: Name used for the commit user
-  #   required: false
-  #   default: GitHub Actions
-  # commit_user_email:
-  #   description: Email address used for the commit user
-  #   required: false
-  #   default: actions@github.com
-  # commit_author:
-  #   description: Value used for the commit author. Defaults to the username of whoever triggered this workflow run.
-  #   required: false
-  #   default: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
 runs:
   using: "node12"
   main: "dist/index.js"

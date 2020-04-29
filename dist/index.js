@@ -2151,7 +2151,7 @@ function pullRequest(token, xml, output) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
             const context = github.context;
-            const branch = 'vita-changeinfo';
+            const branch = 'ps-changeinfo';
             // create branch
             try {
                 yield octokit.git.createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: `refs/heads/${branch}` }));
@@ -2197,7 +2197,7 @@ function pullRequest(token, xml, output) {
                 return;
             // Pull request
             try {
-                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] Changeinfo update', head: branch, base: 'master' }));
+                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[PS Changeinfo] Changeinfo update', head: branch, base: 'master' }));
             }
             catch (error) {
                 core.info('unable to create pull request');

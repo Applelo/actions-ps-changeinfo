@@ -9,7 +9,7 @@ export async function pullRequest(
   return new Promise(async (resolve, reject) => {
     const octokit = new github.GitHub(token);
     const context = github.context;
-    const branch = 'vita-changeinfo';
+    const branch = 'ps-changeinfo';
 
     // create branch
     try {
@@ -87,7 +87,7 @@ export async function pullRequest(
     try {
       await octokit.pulls.create({
         ...context.repo,
-        title: '[Vita Changeinfo] Changeinfo update',
+        title: '[PS Changeinfo] Changeinfo update',
         head: branch,
         base: 'master',
       });
