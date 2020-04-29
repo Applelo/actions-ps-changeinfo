@@ -6,7 +6,7 @@ export async function pullRequest(
   xml: string,
   output: string,
 ): Promise<boolean> {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve, reject) => {
     const octokit = new github.GitHub(token);
     const context = github.context;
     const branch = 'vita-changeinfo';
@@ -29,10 +29,11 @@ export async function pullRequest(
       contents = await octokit.repos.getContents({
         ...context.repo,
         path: output,
+        ref: branch,
       });
     } catch (error) {
-      core.error('unable to get file');
-      core.error(error);
+      core.info('unable to get file');
+      core.info(error);
     }
 
     let createOrUpdateFileSHA;
@@ -62,6 +63,7 @@ export async function pullRequest(
     } catch (error) {
       core.error('unable to create / update file');
       core.error(error);
+      reject(Error('unable to create / update file'));
     }
 
     let pullRequests;
@@ -73,8 +75,8 @@ export async function pullRequest(
         state: 'open',
       });
     } catch (error) {
-      core.error('unable to get pull request');
-      core.error(error);
+      core.info('unable to get pull request');
+      core.info(error);
     }
 
     if (pullRequests) return;
@@ -88,8 +90,8 @@ export async function pullRequest(
         base: 'master',
       });
     } catch (error) {
-      core.error('unable to create pull request');
-      core.error(error);
+      core.info('unable to create pull request');
+      core.info(error);
     }
 
     resolve(true);
