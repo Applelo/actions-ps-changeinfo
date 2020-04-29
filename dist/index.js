@@ -2148,7 +2148,7 @@ const github = __importStar(__webpack_require__(469));
 const core = __importStar(__webpack_require__(470));
 function pullRequest(token, xml, output) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
             const context = github.context;
             const branch = 'vita-changeinfo';
@@ -2163,16 +2163,17 @@ function pullRequest(token, xml, output) {
             //get file
             let contents = null;
             try {
-                contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output }));
+                contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output, ref: branch }));
             }
             catch (error) {
-                core.error('unable to get file');
-                core.error(error);
+                core.info('unable to get file');
+                core.info(error);
             }
             let createOrUpdateFileSHA;
             if (contents && !Array.isArray(contents.data)) {
                 createOrUpdateFileSHA = { sha: contents.data.sha };
             }
+            // return;
             // create / update file
             try {
                 yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
@@ -2181,16 +2182,16 @@ function pullRequest(token, xml, output) {
                     }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }), createOrUpdateFileSHA));
             }
             catch (error) {
-                core.error('unable to create / update file');
                 core.error(error);
+                reject(Error('unable to create / update file'));
             }
             let pullRequests;
             try {
                 pullRequests = yield octokit.pulls.list(Object.assign(Object.assign({}, context.repo), { head: branch, state: 'open' }));
             }
             catch (error) {
-                core.error('unable to get pull request');
-                core.error(error);
+                core.info('unable to get pull request');
+                core.info(error);
             }
             if (pullRequests)
                 return;
@@ -2199,8 +2200,8 @@ function pullRequest(token, xml, output) {
                 yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[Vita Changeinfo] Changeinfo update', head: branch, base: 'master' }));
             }
             catch (error) {
-                core.error('unable to create pull request');
-                core.error(error);
+                core.info('unable to create pull request');
+                core.info(error);
             }
             resolve(true);
         }));
@@ -3566,10 +3567,10 @@ const marked_1 = __importDefault(__webpack_require__(886));
 const fs_1 = __importDefault(__webpack_require__(747));
 function parse(input) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             fs_1.default.readFile(input, (err, data) => {
                 if (err)
-                    throw err;
+                    reject(err);
                 const lexer = marked_1.default.lexer(data.toString());
                 resolve(lexer);
             });
@@ -3746,19 +3747,23 @@ function run() {
                 core.error('No GitHub Token');
             const input = core.getInput('input'); //default 'CHANGELOG.md'
             const output = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
-            const markedown = yield parse_1.parse(input).catch(error => core.error(error));
+            const markedown = yield parse_1.parse(input).catch(error => {
+                throw error;
+            });
             if (!markedown) {
-                core.info('Markdown parsed failed');
                 throw Error('Markdown parsed failed');
             }
             core.info('Markedown parsed');
-            const xml = yield create_1.create(markedown).catch(error => core.error(error));
+            const xml = yield create_1.create(markedown).catch(error => {
+                throw error;
+            });
             if (!xml) {
-                core.info('Changeingo creation failed');
                 throw Error('changeingo creation failed');
             }
             core.info('Changeinfo created');
-            yield pullRequest_1.pullRequest(token, xml, output).catch(error => core.error(error));
+            yield pullRequest_1.pullRequest(token, xml, output).catch(error => {
+                throw error;
+            });
         }
         catch (error) {
             core.setFailed(error.message);

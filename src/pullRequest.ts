@@ -1,6 +1,5 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
-import {Context} from '@actions/github/lib/context';
 
 export async function pullRequest(
   token: string,
@@ -11,10 +10,6 @@ export async function pullRequest(
     const octokit = new github.GitHub(token);
     const context = github.context;
     const branch = 'vita-changeinfo';
-    // const context = {
-    //   repo: {repo: 'actions-vita-changeinfo', owner: 'Applelo'},
-    //   sha: '',
-    // };
 
     // create branch
     try {
@@ -45,7 +40,6 @@ export async function pullRequest(
 
     if (contents && !Array.isArray(contents.data)) {
       createOrUpdateFileSHA = {sha: contents.data.sha};
-      console.log('sha', contents.data.sha);
     }
 
     // return;
