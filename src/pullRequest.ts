@@ -26,15 +26,14 @@ export async function pullRequest(
     //get file
     let sha = null;
     try {
+      // Not working, I don't know why
       // contents = await octokit.repos.getContents({
       //   ...context.repo,
       //   path: output,
       //   ref: branch,
       // });
       sha = octokit.repos.get.endpoint({
-        ...context.repo,
-        path: output,
-        ref: branch,
+        url: `https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/contents/${output}?ref=${branch}`,
       }).body.sha;
     } catch (error) {
       core.info('unable to get file');
