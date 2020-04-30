@@ -42,8 +42,6 @@ export async function pullRequest(
       createOrUpdateFileSHA = {sha: contents.data.sha};
     }
 
-    // return;
-
     // create / update file
     try {
       await octokit.repos.createOrUpdateFile(
@@ -81,7 +79,10 @@ export async function pullRequest(
       core.info(error);
     }
 
-    if (pullRequests) return;
+    if (pullRequests) {
+      resolve(true);
+      return;
+    }
 
     // Pull request
     try {
@@ -92,8 +93,8 @@ export async function pullRequest(
         base: 'master',
       });
     } catch (error) {
-      core.info('unable to create pull request');
       core.info(error);
+      reject(Error('unable to create pull request'));
     }
 
     resolve(true);
