@@ -2191,7 +2191,7 @@ function pullRequest(token, xml, output) {
             core.info('check if pull request already exist');
             let pullRequests;
             try {
-                pullRequests = yield octokit.pulls.list(Object.assign(Object.assign({}, context.repo), { head: branch, state: 'open' }));
+                pullRequests = yield octokit.pulls.list(Object.assign(Object.assign({}, context.repo), { head: `${context.repo.owner}:${branch}`, state: 'open' }));
             }
             catch (error) {
                 core.info('unable to get pull request');

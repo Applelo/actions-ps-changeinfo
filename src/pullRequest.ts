@@ -75,7 +75,7 @@ export async function pullRequest(
     try {
       pullRequests = await octokit.pulls.list({
         ...context.repo,
-        head: branch,
+        head: `${context.repo.owner}:${branch}`,
         state: 'open',
       });
     } catch (error) {
