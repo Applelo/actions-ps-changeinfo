@@ -12,6 +12,7 @@ export async function pullRequest(
     const branch = 'ps-changeinfo';
 
     // create branch
+    core.info('create branch');
     try {
       await octokit.git.createRef({
         ...context.repo,
@@ -24,6 +25,7 @@ export async function pullRequest(
     }
 
     //get file
+    core.info('get file');
     let contents = null;
     try {
       contents = await octokit.repos.getContents({
@@ -43,6 +45,7 @@ export async function pullRequest(
     }
 
     // create / update file
+    core.info('create/update file');
     try {
       await octokit.repos.createOrUpdateFile(
         Object.assign(
@@ -66,8 +69,9 @@ export async function pullRequest(
       reject(Error('unable to create / update file'));
     }
 
+    // Pull request
+    core.info('check if pull request already exist');
     let pullRequests;
-
     try {
       pullRequests = await octokit.pulls.list({
         ...context.repo,
@@ -84,7 +88,7 @@ export async function pullRequest(
       return;
     }
 
-    // Pull request
+    core.info('create pull request');
     try {
       await octokit.pulls.create({
         ...context.repo,
