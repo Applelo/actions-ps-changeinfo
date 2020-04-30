@@ -2153,6 +2153,7 @@ function pullRequest(token, xml, output) {
             const context = github.context;
             const branch = 'ps-changeinfo';
             // create branch
+            core.info('create branch');
             try {
                 yield octokit.git.createRef(Object.assign(Object.assign({}, context.repo), { sha: context.sha, ref: `refs/heads/${branch}` }));
             }
@@ -2161,6 +2162,7 @@ function pullRequest(token, xml, output) {
                 core.info(error);
             }
             //get file
+            core.info('get file');
             let contents = null;
             try {
                 contents = yield octokit.repos.getContents(Object.assign(Object.assign({}, context.repo), { path: output, ref: branch }));
@@ -2173,8 +2175,8 @@ function pullRequest(token, xml, output) {
             if (contents && !Array.isArray(contents.data)) {
                 createOrUpdateFileSHA = { sha: contents.data.sha };
             }
-            // return;
             // create / update file
+            core.info('create/update file');
             try {
                 yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
                         name: 'GitHub Actions',
@@ -2185,6 +2187,8 @@ function pullRequest(token, xml, output) {
                 core.error(error);
                 reject(Error('unable to create / update file'));
             }
+            // Pull request
+            core.info('check if pull request already exist');
             let pullRequests;
             try {
                 pullRequests = yield octokit.pulls.list(Object.assign(Object.assign({}, context.repo), { head: branch, state: 'open' }));
@@ -2193,15 +2197,17 @@ function pullRequest(token, xml, output) {
                 core.info('unable to get pull request');
                 core.info(error);
             }
-            if (pullRequests)
+            if (pullRequests) {
+                resolve(true);
                 return;
-            // Pull request
+            }
+            core.info('create pull request');
             try {
                 yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[PS Changeinfo] Changeinfo update', head: branch, base: 'master' }));
             }
             catch (error) {
-                core.info('unable to create pull request');
                 core.info(error);
+                reject(Error('unable to create pull request'));
             }
             resolve(true);
         }));
