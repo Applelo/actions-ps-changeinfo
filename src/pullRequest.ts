@@ -55,7 +55,7 @@ export async function pullRequest(
           {
             ...context.repo,
             branch,
-            content: Buffer.from(xml).toString('base64'),
+            content: xml,
             committer: {
               name: 'GitHub Actions',
               email: 'actions@github.com',

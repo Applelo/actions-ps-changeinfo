@@ -7,7 +7,7 @@
 
 Create a `changeinfo.xml` can be really boring to do if your PS (PS4 or PSVita) application is often updated. Why not use the `CHANGELOG.md` and transform it into a `changeinfo.xml`. This is why I created this action (and also to test how good GitHub solution is).
 
-The action is really simple, give him an input, an output, a github token and it will submit a pull request with a `changeinfo.xml` created/updated: see [#2 pullrequest](https://github.com/Applelo/actions-vita-changeinfo/pull/2)
+The action is really simple, give him an input, an output, a github token and it will submit a pull request with a `changeinfo.xml` created/updated: see [#3 pull request](https://github.com/Applelo/actions-vita-changeinfo/pull/2)
 
 ## Usage
 
@@ -42,7 +42,7 @@ jobs:
 
 For the `CHANGELOG.md` example, you can check [this one](https://github.com/Applelo/actions-ps-changeinfo/blob/master/__tests__/CHANGELOG.md)
 
-If the result of the transformation is superior to 64kb, the file while be reduces with the remove of older minor version.
+If the result of the transformation is superior to 64kb (your are large), the file while be reduces with the remove of older version.
 
 # Actions changelog
 
