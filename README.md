@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: Applelo/actions-ps-changeinfo@1.1
+      - uses: Applelo/actions-ps-changeinfo@v1.1
         with:
           input: "__tests__/CHANGELOG.md" #default: CHANGELOG.md
           output: "__tests__/changeinfo.xml" #default: sce_sys/changeinfo.xml
