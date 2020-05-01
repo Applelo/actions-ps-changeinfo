@@ -1,5 +1,5 @@
-import * as github from '@actions/github';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 
 export async function pullRequest(
   token: string,
@@ -8,8 +8,11 @@ export async function pullRequest(
 ): Promise<boolean> {
   return new Promise(async (resolve, reject) => {
     const octokit = new github.GitHub(token);
-    const context = github.context;
     const branch = 'ps-changeinfo';
+    const context = github.context;
+    // const context = {
+    //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
+    // };
 
     // create branch
     core.info('create branch');
@@ -24,7 +27,7 @@ export async function pullRequest(
       core.info(error);
     }
 
-    //get file
+    // get file
     core.info('get file');
     let contents = null;
     try {
@@ -83,7 +86,11 @@ export async function pullRequest(
       core.info(error);
     }
 
-    if (pullRequests) {
+    if (
+      pullRequests &&
+      Array.isArray(pullRequests.data) &&
+      pullRequests.data.length > 0
+    ) {
       resolve(true);
       return;
     }

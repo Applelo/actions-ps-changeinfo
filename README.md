@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: applelo/actions-vita-changeinfo@v1
+      - uses: applelo/actions-ps-changeinfo@v1
         with:
           input: "__tests__/CHANGELOG.md" #default: CHANGELOG.md
           output: "__tests__/changeinfo.xml" #default: sce_sys/changeinfo.xml
@@ -38,9 +38,11 @@ jobs:
 | `output`  | `sce_sys/changeinfo.xml`  | The output of the file                                          |
 | `token`   | yes                       | The GitHub token, you can use the default `GITHUB_TOKEN`        |
 
-*Note: This grants access to the GITHUB_TOKEN so the action can make calls to GitHub's rest API*
+> *Note: This grants access to the GITHUB_TOKEN so the action can make calls to GitHub's rest API*
 
-For the `CHANGELOG.md` file format, you can check [this one](https://github.com/Applelo/actions-ps-changeinfo/blob/master/__tests__/CHANGELOG.md)
+For the `CHANGELOG.md` example, you can check [this one](https://github.com/Applelo/actions-ps-changeinfo/blob/master/__tests__/CHANGELOG.md)
+
+If the result of the transformation is superior to 64kb, the file while be reduces with the remove of older minor version.
 
 # Actions changelog
 
