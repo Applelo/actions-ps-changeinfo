@@ -2144,14 +2144,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const github = __importStar(__webpack_require__(469));
 const core = __importStar(__webpack_require__(470));
+const github = __importStar(__webpack_require__(469));
 function pullRequest(token, xml, output) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
-            const context = github.context;
             const branch = 'ps-changeinfo';
+            const context = github.context;
+            // const context = {
+            //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
+            // };
             // create branch
             core.info('create branch');
             try {
@@ -2161,7 +2164,7 @@ function pullRequest(token, xml, output) {
                 core.info('unable to create branch');
                 core.info(error);
             }
-            //get file
+            // get file
             core.info('get file');
             let contents = null;
             try {
@@ -2197,7 +2200,9 @@ function pullRequest(token, xml, output) {
                 core.info('unable to get pull request');
                 core.info(error);
             }
-            if (pullRequests) {
+            if (pullRequests &&
+                Array.isArray(pullRequests.data) &&
+                pullRequests.data.length > 0) {
                 resolve(true);
                 return;
             }
