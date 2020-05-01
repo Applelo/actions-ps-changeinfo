@@ -11,6 +11,10 @@ inputs:
     description: "The path of the changeinfo xml file"
     default: "sce_sys/changeinfo.xml"
     required: false
+  branch:
+    description: "The name of the branch for the pull request"
+    default: "ps-changeinfo"
+    required: false
   token:
     description: "GitHub token"
     required: true

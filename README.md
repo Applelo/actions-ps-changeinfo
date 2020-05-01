@@ -36,6 +36,7 @@ jobs:
 | --------- | ------------------------- | --------------------------------------------------------------- |
 | `input`   | `CHANGELOG.md`            | The input of the file                                           |
 | `output`  | `sce_sys/changeinfo.xml`  | The output of the file                                          |
+| `branch`  | `ps-changeinfo`           | The name of the branch use for the pull request                 |
 | `token`   | yes                       | The GitHub token, you can use the default `GITHUB_TOKEN`        |
 
 > *Note: This grants access to the GITHUB_TOKEN so the action can make calls to GitHub's rest API*

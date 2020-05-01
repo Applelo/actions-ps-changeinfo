@@ -3,12 +3,12 @@ import * as github from '@actions/github';
 
 export async function pullRequest(
   token: string,
+  branch: string,
   xml: string,
   output: string,
 ): Promise<boolean> {
   return new Promise(async (resolve, reject) => {
     const octokit = new github.GitHub(token);
-    const branch = 'ps-changeinfo';
     const context = github.context;
     // const context = {
     //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},

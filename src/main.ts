@@ -10,6 +10,7 @@ async function run(): Promise<void> {
 
     const input: string = core.getInput('input'); //default 'CHANGELOG.md'
     const output: string = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
+    const branch: string = core.getInput('branch'); //default 'ps-changeinfo'
 
     const markedown: marked.TokensList | void = await parse(input).catch(
       error => {
@@ -31,7 +32,7 @@ async function run(): Promise<void> {
     }
     core.info('Changeinfo created');
 
-    await pullRequest(token, xml, output).catch(error => {
+    await pullRequest(token, branch, xml, output).catch(error => {
       throw error;
     });
   } catch (error) {
