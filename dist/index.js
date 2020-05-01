@@ -661,6 +661,8 @@ function pullRequest(token, branch, xml, output) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
             const context = github.context;
+            // context.ref
+            core.info(`Context ref: ${context.ref}`);
             // const context = {
             //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
             // };

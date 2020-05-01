@@ -10,6 +10,9 @@ export async function pullRequest(
   return new Promise(async (resolve, reject) => {
     const octokit = new github.GitHub(token);
     const context = github.context;
+
+    // context.ref
+    core.info(`Context ref: ${context.ref}`);
     // const context = {
     //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
     // };
