@@ -661,8 +661,8 @@ function pullRequest(token, branch, xml, output) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
             const context = github.context;
+            const prBase = context.ref.replace('refs/heads/', '');
             // context.ref
-            core.info(`Context ref: ${context.ref}`);
             // const context = {
             //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
             // };
@@ -719,7 +719,7 @@ function pullRequest(token, branch, xml, output) {
             }
             core.info('create pull request');
             try {
-                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[PS Changeinfo] Changeinfo update', head: branch, base: 'master' }));
+                yield octokit.pulls.create(Object.assign(Object.assign({}, context.repo), { title: '[PS Changeinfo] Changeinfo update', head: branch, base: prBase }));
             }
             catch (error) {
                 core.info(error);

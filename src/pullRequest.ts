@@ -10,9 +10,9 @@ export async function pullRequest(
   return new Promise(async (resolve, reject) => {
     const octokit = new github.GitHub(token);
     const context = github.context;
+    const prBase = context.ref.replace('refs/heads/', '');
 
     // context.ref
-    core.info(`Context ref: ${context.ref}`);
     // const context = {
     //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
     // };
@@ -104,7 +104,7 @@ export async function pullRequest(
         ...context.repo,
         title: '[PS Changeinfo] Changeinfo update',
         head: branch,
-        base: 'master',
+        base: prBase,
       });
     } catch (error) {
       core.info(error);
