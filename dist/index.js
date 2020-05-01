@@ -2181,7 +2181,7 @@ function pullRequest(token, xml, output) {
             // create / update file
             core.info('create/update file');
             try {
-                yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: Buffer.from(xml).toString('base64'), committer: {
+                yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: xml, committer: {
                         name: 'GitHub Actions',
                         email: 'actions@github.com',
                     }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }), createOrUpdateFileSHA));
@@ -12000,52 +12000,71 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const xmlbuilder_1 = __importDefault(__webpack_require__(312));
 // import fs from 'fs';
-function create(markdown) {
+function create(markdown, base64 = true) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
-            const changelog = new Map();
-            let currentVersion = '';
-            for (const item of markdown) {
-                if (item.type === 'heading' && item.depth === 1) {
-                    const versionParts = item.text.split('.');
-                    const versionFirst = versionParts[0].length === 1
-                        ? `0${versionParts[0]}`
-                        : `${versionParts[0]}`;
-                    const versionSecond = versionParts[1].length === 1
-                        ? `${versionParts[1]}0`
-                        : `${versionParts[1]}`;
-                    const version = `${versionFirst}.${versionSecond}`;
-                    currentVersion = version;
-                    //@ts-ignore
-                }
-                else if (item.type === 'list') {
-                    //@ts-ignore
-                    const listItems = item.items;
-                    const list = [''];
-                    for (const listItem of listItems) {
-                        list.push(listItem.raw.trim());
-                    }
-                    list.push('');
-                    changelog.set(currentVersion, list);
-                }
+            const changelog = markdownToMap(markdown);
+            const xml = createChangeinfo(changelog);
+            if (base64) {
+                const buffer = Buffer.from(xml);
+                resolve(buffer.toString('base64'));
             }
-            const changelogKeys = Array.from(changelog.keys()).reverse();
-            const changeinfo = xmlbuilder_1.default.create('changeinfo');
-            for (const version of changelogKeys) {
-                const list = changelog.get(version);
-                if (list) {
-                    const changes = changeinfo.ele('changes');
-                    changes.att('app_ver', version);
-                    changes.dat(list.join('\n'));
-                }
+            else {
+                resolve(xml);
             }
-            const xml = changeinfo.end({ pretty: true });
-            // fs.writeFile('__tests__/changeinfo.xml', xml, () => {});
-            resolve(xml);
         });
     });
 }
 exports.create = create;
+const markdownToMap = (markdown) => {
+    const changelog = new Map();
+    let currentVersion = '';
+    for (const item of markdown) {
+        if (item.type === 'heading' && item.depth === 1) {
+            const versionParts = item.text.split('.');
+            const versionFirst = versionParts[0].length === 1
+                ? `0${versionParts[0]}`
+                : `${versionParts[0]}`;
+            const versionSecond = versionParts[1].length === 1
+                ? `${versionParts[1]}0`
+                : `${versionParts[1]}`;
+            const version = `${versionFirst}.${versionSecond}`;
+            currentVersion = version;
+            //@ts-ignore
+        }
+        else if (item.type === 'list') {
+            //@ts-ignore
+            const listItems = item.items;
+            const list = [''];
+            for (const listItem of listItems) {
+                list.push(listItem.raw.trim());
+            }
+            list.push('');
+            changelog.set(currentVersion, list);
+        }
+    }
+    return changelog;
+};
+const createChangeinfo = (changelog) => {
+    const changelogKeys = Array.from(changelog.keys()).reverse();
+    const changeinfo = xmlbuilder_1.default.create('changeinfo');
+    for (const version of changelogKeys) {
+        const list = changelog.get(version);
+        if (list) {
+            const changes = changeinfo.ele('changes');
+            changes.att('app_ver', version);
+            changes.dat(list.join('\n'));
+        }
+    }
+    const xml = changeinfo.end({ pretty: true });
+    const buffer = Buffer.from(xml);
+    // check 64kb limitation, if not remove one older version
+    if (buffer.byteLength / 1000 > 64) {
+        changelog.delete(changelogKeys[changelogKeys.length - 1]);
+        return createChangeinfo(changelog);
+    }
+    return xml;
+};
 
 
 /***/ }),
