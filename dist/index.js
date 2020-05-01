@@ -2146,11 +2146,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
-function pullRequest(token, xml, output) {
+function pullRequest(token, branch, xml, output) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
-            const branch = 'ps-changeinfo';
             const context = github.context;
             // const context = {
             //   repo: {owner: 'Applelo', repo: 'actions-ps-changeinfo'},
@@ -3758,6 +3757,7 @@ function run() {
                 core.error('No GitHub Token');
             const input = core.getInput('input'); //default 'CHANGELOG.md'
             const output = core.getInput('output'); //default 'sce_sys/changeinfo.xml'
+            const branch = core.getInput('branch'); //default 'ps-changeinfo'
             const markedown = yield parse_1.parse(input).catch(error => {
                 throw error;
             });
@@ -3772,7 +3772,7 @@ function run() {
                 throw Error('changeingo creation failed');
             }
             core.info('Changeinfo created');
-            yield pullRequest_1.pullRequest(token, xml, output).catch(error => {
+            yield pullRequest_1.pullRequest(token, branch, xml, output).catch(error => {
                 throw error;
             });
         }
