@@ -1,6 +1,9 @@
 name: "PlayStation Changeinfo"
 description: "Transform CHANGELOG.md into changeinfo.xml "
 author: "Applelo"
+branding:
+  color: blue
+  icon: git-pull-request
 inputs:
   # Main
   input:
