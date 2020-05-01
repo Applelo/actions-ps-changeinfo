@@ -4,7 +4,7 @@ import * as github from '@actions/github';
 export async function pullRequest(
   token: string,
   branch: string,
-  xml: string,
+  xmlBase64: string,
   output: string,
 ): Promise<boolean> {
   return new Promise(async (resolve, reject) => {
@@ -48,6 +48,11 @@ export async function pullRequest(
 
     if (contents && !Array.isArray(contents.data)) {
       createOrUpdateFileSHA = {sha: contents.data.sha};
+
+      if (xmlBase64 === contents.data.content) {
+        core.info('no update available');
+        resolve(true);
+      }
     }
 
     // create / update file
@@ -58,7 +63,7 @@ export async function pullRequest(
           {
             ...context.repo,
             branch,
-            content: xml,
+            content: xmlBase64,
             committer: {
               name: 'GitHub Actions',
               email: 'actions@github.com',
@@ -95,7 +100,6 @@ export async function pullRequest(
       pullRequests.data.length > 0
     ) {
       resolve(true);
-      return;
     }
 
     core.info('create pull request');

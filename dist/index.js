@@ -656,7 +656,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
-function pullRequest(token, branch, xml, output) {
+function pullRequest(token, branch, xmlBase64, output) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             const octokit = new github.GitHub(token);
@@ -688,11 +688,15 @@ function pullRequest(token, branch, xml, output) {
             let createOrUpdateFileSHA;
             if (contents && !Array.isArray(contents.data)) {
                 createOrUpdateFileSHA = { sha: contents.data.sha };
+                if (xmlBase64 === contents.data.content) {
+                    core.info('no update available');
+                    resolve(true);
+                }
             }
             // create / update file
             core.info('create/update file');
             try {
-                yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: xml, committer: {
+                yield octokit.repos.createOrUpdateFile(Object.assign(Object.assign(Object.assign({}, context.repo), { branch, content: xmlBase64, committer: {
                         name: 'GitHub Actions',
                         email: 'actions@github.com',
                     }, path: output, message: 'Add/Update changeinfo.xml', sha: createOrUpdateFileSHA }), createOrUpdateFileSHA));
@@ -715,7 +719,6 @@ function pullRequest(token, branch, xml, output) {
                 Array.isArray(pullRequests.data) &&
                 pullRequests.data.length > 0) {
                 resolve(true);
-                return;
             }
             core.info('create pull request');
             try {
@@ -2277,14 +2280,14 @@ function run() {
                 throw Error('Markdown parsed failed');
             }
             core.info('Markedown parsed');
-            const xml = yield create_1.create(markedown).catch(error => {
+            const xmlBase64 = yield create_1.create(markedown).catch(error => {
                 throw error;
             });
-            if (!xml) {
+            if (!xmlBase64) {
                 throw Error('changeingo creation failed');
             }
             core.info('Changeinfo created');
-            yield pullRequest_1.pullRequest(token, branch, xml, output).catch(error => {
+            yield pullRequest_1.pullRequest(token, branch, xmlBase64, output).catch(error => {
                 throw error;
             });
         }

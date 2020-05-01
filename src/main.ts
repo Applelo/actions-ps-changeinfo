@@ -23,16 +23,16 @@ async function run(): Promise<void> {
     }
 
     core.info('Markedown parsed');
-    const xml = await create(markedown).catch(error => {
+    const xmlBase64 = await create(markedown).catch(error => {
       throw error;
     });
 
-    if (!xml) {
+    if (!xmlBase64) {
       throw Error('changeingo creation failed');
     }
     core.info('Changeinfo created');
 
-    await pullRequest(token, branch, xml, output).catch(error => {
+    await pullRequest(token, branch, xmlBase64, output).catch(error => {
       throw error;
     });
   } catch (error) {
