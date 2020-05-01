@@ -25,25 +25,25 @@
   "author": "Applelo",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0",
+    "@actions/core": "^1.2.4",
     "@actions/github": "^2.1.1",
     "marked": "^1.0.0",
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
+    "@types/jest": "^25.2.1",
     "@types/marked": "^0.7.4",
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.8.0",
-    "@zeit/ncc": "^0.20.5",
+    "@zeit/ncc": "^0.22.1",
     "eslint": "^5.16.0",
     "eslint-plugin-github": "^2.0.0",
     "eslint-plugin-jest": "^22.21.0",
-    "jest": "^24.9.0",
-    "jest-circus": "^24.9.0",
+    "jest": "^25.5.3",
+    "jest-circus": "^25.5.3",
     "js-yaml": "^3.13.1",
-    "prettier": "^1.19.1",
-    "ts-jest": "^24.2.0",
+    "prettier": "^2.0.5",
+    "ts-jest": "^25.4.0",
     "typescript": "^3.6.4"
   }
 }
