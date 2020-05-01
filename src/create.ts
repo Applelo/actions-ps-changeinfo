@@ -56,7 +56,7 @@ const markdownToMap = (markdown: marked.TokensList): Map<string, string[]> => {
 
 const createChangeinfo = (changelog: Map<string, string[]>): string => {
   const changelogKeys = Array.from(changelog.keys()).reverse();
-  const changeinfo = builder.create('changeinfo');
+  const changeinfo = builder.create('changeinfo', {encoding: 'utf-8'});
   for (const version of changelogKeys) {
     const list = changelog.get(version);
     if (list) {

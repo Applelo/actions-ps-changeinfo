@@ -11994,7 +11994,7 @@ const markdownToMap = (markdown) => {
 };
 const createChangeinfo = (changelog) => {
     const changelogKeys = Array.from(changelog.keys()).reverse();
-    const changeinfo = xmlbuilder_1.default.create('changeinfo');
+    const changeinfo = xmlbuilder_1.default.create('changeinfo', { encoding: 'utf-8' });
     for (const version of changelogKeys) {
         const list = changelog.get(version);
         if (list) {
