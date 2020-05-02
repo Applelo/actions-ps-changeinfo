@@ -11989,7 +11989,10 @@ const markdownToMap = (markdown) => {
             const listItems = item.items;
             const list = [''];
             for (const listItem of listItems) {
-                list.push(listItem.raw.trim());
+                const line = listItem.raw.trim();
+                // eslint-disable-next-line no-useless-escape
+                const lineNoLink = line.replace(/\[([^\[]+)\](\(.*\))/gm, '').trim(); //remove markdown link
+                list.push(lineNoLink);
             }
             list.push('');
             changelog.set(currentVersion, list);
