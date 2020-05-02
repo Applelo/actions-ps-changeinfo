@@ -39,23 +39,23 @@ test('changeinfo base64', async () => {
   expect(created).toMatch(Buffer.from(expected).toString('base64'));
 });
 
-test('changeinfo limit to 64kb', async () => {
-  // generate an heavy markdown superiror at 64kb
-  let heavy = '';
-  for (let i = 1; i <= 100; i++) {
-    heavy += `# ${i}.0\n\n`;
-    for (let j = 0; j <= 100; j++) {
-      heavy += '- Feature\n';
-    }
-    heavy += '\n';
-  }
+// test('changeinfo limit to 64kb', async () => {
+//   // generate an heavy markdown superiror at 64kb
+//   let heavy = '';
+//   for (let i = 1; i <= 100; i++) {
+//     heavy += `# ${i}.0\n\n`;
+//     for (let j = 0; j <= 100; j++) {
+//       heavy += '- Feature\n';
+//     }
+//     heavy += '\n';
+//   }
 
-  await createAFile('__tests__/CHANGELOG-heavy.md', heavy);
-  const markdown = await parse('__tests__/CHANGELOG-heavy.md');
-  const created = await create(markdown, false);
-  const bufferLength = Buffer.from(created).byteLength;
-  expect(bufferLength / 1000).toBeLessThan(64);
+//   await createAFile('__tests__/CHANGELOG-heavy.md', heavy);
+//   const markdown = await parse('__tests__/CHANGELOG-heavy.md');
+//   const created = await create(markdown, false);
+//   const bufferLength = Buffer.from(created).byteLength;
+//   expect(bufferLength / 1000).toBeLessThan(64);
 
-  const expected = await readAFile('__tests__/expected-heavy.xml');
-  expect(created).toMatch(expected);
-});
+//   const expected = await readAFile('__tests__/expected-heavy.xml');
+//   expect(created).toMatch(expected);
+// });

@@ -43,7 +43,10 @@ const markdownToMap = (markdown: marked.TokensList): Map<string, string[]> => {
       const list: string[] = [''];
 
       for (const listItem of listItems) {
-        list.push(listItem.raw.trim());
+        const line: string = listItem.raw.trim();
+        // eslint-disable-next-line no-useless-escape
+        const lineNoLink = line.replace(/\[([^\[]+)\](\(.*\))/gm, '').trim(); //remove markdown link
+        list.push(lineNoLink);
       }
       list.push('');
 
